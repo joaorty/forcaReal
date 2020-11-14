@@ -1,6 +1,6 @@
 //Jogo da Forca by Anderson e João Augusto.
 /*
-  O jogo precisa: armazenar palavras,
+  O jogo precisa: armazenar palavras, remover palavras, sair
 
 */
 #include <stdio.h>
@@ -9,11 +9,22 @@ FILE *palavras;
 
 void adicionarPalavras() 
 {
-  
-  //scanf
-  //abrir o arquivo no modo append
-  //fprintf
-  //do while (repetindo)
+  char p[32];
+  printf("Adicione uma palavra ao jogo (digite 0 para parar): \n");
+  gets(p);
+  palavras = fopen("palavras.txt", "at");
+  fprintf(palavras, "%s", p);  
+  fclose(palavras);
+  while(1) {
+    printf("Adicione uma palavra ao jogo (digite 0 para parar): \n");
+    gets(p);
+    if(p[0]=='0') break;
+    palavras = fopen("palavras.txt", "at");
+    fprintf(palavras, "\n%s", p);
+    fclose(palavras);
+    system("clear");
+  }
+    system("clear");
 }
 
 unsigned short int menu() //Menu 
@@ -35,20 +46,22 @@ unsigned short int menu() //Menu
 
 int main(void) {
   unsigned short int op;  
-  op = menu();
   //palavras = fopen("palavras.text", "wt");
   //fprintf(palavras, "%s\n", "batata");//exemplo
-  switch(op) 
-  {
-    case 1:
-      //comecarJogo();
-      break;
-    case 2: 
-      //adicionarPalavra();
-      break;
-    case 3:
-      printf("\tObrigado por jogar o jogo!\nBy: Anderson Lopes e João Augusto\n\n");
-      return 0;
-  }
+  do{
+    op = menu();
+    switch(op) 
+    {
+      case 1:
+        //comecarJogo();
+        break;
+      case 2: 
+        adicionarPalavras();
+        break;
+      case 3:
+        printf("\tObrigado por jogar o jogo!\nBy: Anderson Lopes e João Augusto\n\n");
+        break;
+    }
+  }while(op!=3);
   return 0;
 }
