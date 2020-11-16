@@ -1,11 +1,12 @@
 //Jogo da Forca by Anderson e João Augusto.
 /*
-  O jogo precisa: armazenar palavras [check], remover palavras, sair[check], erros[check], ver as palavras.
+  O jogo precisa: armazenar palavras [check], remover palavras, sair[check], erros[check], ver as palavras[check].
 
 */
 #include <stdio.h>
-
+#include <time.h>
 FILE *palavras; 
+char palavraescolhida[32];
 
 void verificarArquivo()
 {
@@ -48,6 +49,21 @@ void adicionarPalavras()
     system("clear");
 }
 
+void escolherPalavra()
+{
+  int randomico, qtd;
+  palavras = fopen("palavras.txt", "r");
+  verificarArquivo();
+  fscanf(palavras, "%d", &qtd);
+  srand(time(0)); //Colocar números aleatórios
+  randomico = rand() % qtd; //entre 0 e qtd
+  for(int i = 0; i < qtd; i++) 
+  {
+      fscanf(palavras, "%s", palavraescolhida); //Escolher a palavra indo até a linha (randomica) e pegando a palavra;
+  }
+  fclose(palavras);
+}
+
 unsigned short int menu() //Menu 
 {
   unsigned short int entrada;
@@ -74,6 +90,10 @@ int main(void) {
     switch(op) 
     {
       case 1:
+      do{
+        escolherPalavra();
+      }while()
+        
         //comecarJogo();
         break;
       case 2: 
