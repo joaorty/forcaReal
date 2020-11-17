@@ -4,8 +4,10 @@
 
 */
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 
 FILE *palavras; 
 char palavraescolhida[20];
@@ -14,7 +16,7 @@ char chutes[26];
 
 void verificarArquivo()
 {
-  if(palavras == NULL){ 
+  if(palavras == NULL) { 
     printf("\nErro: arquivo não encontrado ou corrompido!\n");
     exit(1);
   }
@@ -63,9 +65,10 @@ void escolherPalavra()
   while((c = fgetc(palavras)) != EOF) {
     if(c == '\n') qtd++;
   }
-  srand(time(0)); //Colocar números aleatórios
+  rewind(palavras);
+  //srand(time(0)); //Colocar números aleatórios
   randomico = rand() % qtd; //entre 0 e qtd
-  for(int i = 0; i < qtd; i++) 
+  for(int i = 0; i < randomico; i++) 
   {
       fscanf(palavras, "%s", palavraescolhida); //Escolher a palavra indo até a linha (randomica) e pegando a palavra;
   }
@@ -82,7 +85,7 @@ unsigned short int menu() //Menu
     printf("\t3- Dicionario\n");
     printf("\t4-Sair\n\n");
     printf("Digite aqui: ");
-    scanf("%hu", &entrada);
+    scanf(" %hu", &entrada);
     if(entrada < 1 || entrada > 4) printf("Erro: número inválido, tente de novo.");
     system("clear"); //Limpar system("cls");
   
@@ -109,11 +112,13 @@ int qtdErros()
 
 void chute() 
 {
-  char chute;
+  //Chute foi declarado como vetor para evitar o erro de digitar mais que 1 caractere.
+  char chute[2];
   printf("\nDigite a letra: ");
-  scanf(" %c", &chute);
-
-  chutes[qtdChutes] = chute;
+  scanf(" %s", &chute);
+  chute[0] = tolower(chute[0]);//coloca toda as letras digitadas em minúsculo
+  fflush(stdin); 
+  chutes[qtdChutes] = chute[0];
   qtdChutes++;
 }
 
@@ -142,9 +147,8 @@ int perdeu()
   return (qtdErros() >= 5);
 }
 
-void forca() 
+void forca(int erros) 
 {
-  int erros = qtdErros();
   printf("  _______       \n");
 	printf(" |/      |      \n");
 	printf(" |      %c%c%c  \n", (erros>=1?'(':' '), (erros>=1?'_':' '), (erros>=1?')':' '));
@@ -154,18 +158,19 @@ void forca()
 	printf(" |              \n");
 	printf("_|___           \n");
 	printf("\n\n");
-
+	
   for(int i = 0; i < strlen(palavraescolhida); i++) {
-	if(chutado(palavraescolhida[i])) printf("%c ", palavraescolhida[i]);
-	else printf("_ ");
+	  if(chutado(palavraescolhida[i])) printf("%c ", palavraescolhida[i]);
+	  else printf("_ ");
 	}
 }
 
 void jogo()
 {
-  forca();
+  int erros = qtdErros();
+  forca(erros);
   chute();
-  system("clear");
+  //system("clear");
 }
 
 int main(void) {
@@ -180,6 +185,7 @@ int main(void) {
         do{
           jogo();
         }while(!ganhou() && !perdeu()); //Continua enquanto não ganha ou não perde
+        printf("Deseja jogar de novo? (S/N");
         break;
       case 2: 
         adicionarPalavras();

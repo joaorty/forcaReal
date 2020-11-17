@@ -24,3 +24,5 @@ loura
 papagaio
 jogo
 celular
+quadrado
+noite
