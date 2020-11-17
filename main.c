@@ -39,20 +39,25 @@ void adicionarPalavras()
 {
   char p[32];
   printf("Adicione uma palavra ao jogo (digite 0 para parar): \n");
-  gets(p);
+  scanf(" %s", p);
   palavras = fopen("palavras.txt", "at");
   verificarArquivo();
-  fprintf(palavras, "%s", p);  
+  fprintf(palavras, "\n%s", p);
   fclose(palavras);
-  while(1) {
+
+  //system("clear");
+	
+	//TODO: CHECAR SE CARACTERE É ALFABETICO
+	//CONVERTER PARA MINUSCULAS
+  do{
     printf("Adicione uma palavra ao jogo (digite 0 para parar): \n");
-    gets(p);
+    scanf("  %s", p);
     if(p[0]=='0') break;
     palavras = fopen("palavras.txt", "at");
     fprintf(palavras, "\n%s", p);
     fclose(palavras);
     system("clear");
-  }
+  }while(p[0]!='0');
     system("clear");
 }
 
@@ -115,7 +120,9 @@ void chute()
   //Chute foi declarado como vetor para evitar o erro de digitar mais que 1 caractere.
   char chute[2];
   printf("\nDigite a letra: ");
-  scanf(" %s", &chute);
+	do {
+  	scanf(" %s", &chute);
+	} while(! isalpha(chute[0]));
   chute[0] = tolower(chute[0]);//coloca toda as letras digitadas em minúsculo
   fflush(stdin); 
   chutes[qtdChutes] = chute[0];
@@ -170,11 +177,58 @@ void jogo()
   int erros = qtdErros();
   forca(erros);
   chute();
-  //system("clear");
+  system("clear");
 }
 
-int main(void) {
+unsigned short int fimJogo()
+{
+  char c;
+  if(ganhou()) 
+  {
+		printf("\nParabéns, você ganhou!\n\n");
+
+		printf("       ___________      \n");
+		printf("      '._==_==_=_.'     \n");
+		printf("      .-\\:      /-.    \n");
+		printf("     | (|:.     |) |    \n");
+		printf("      '-|:.     |-'     \n");
+		printf("        \\::.    /      \n");
+		printf("         '::. .'        \n");
+		printf("           ) (          \n");
+		printf("         _.' '._        \n");
+		printf("        '-------'       \n\n");
+	} else {
+		printf("\nCARALHO MERMÃO, TU É MT BURRO!\n");
+    printf("FOI ENFORCADO CARA, JÁ ERA!\t\t\n");
+		printf("A palavra era **%s**\n\n", palavraescolhida);
+
+		printf("    _______________         \n");
+		printf("   /               \\       \n"); 
+		printf("  /                 \\      \n");
+		printf("//                   \\/\\  \n");
+		printf("\\|   XXXX     XXXX   | /   \n");
+		printf(" |   XXXX     XXXX   |/     \n");
+		printf(" |   XXX       XXX   |      \n");
+		printf(" |                   |      \n");
+		printf(" \\__      XXX      __/     \n");
+		printf("   |\\     XXX     /|       \n");
+		printf("   | |           | |        \n");
+		printf("   | I I I I I I I |        \n");
+		printf("   |  I I I I I I  |        \n");
+		printf("   \\_             _/       \n");
+		printf("     \\_         _/         \n");
+		printf("       \\_______/           \n\n");
+  }
+  do{
+    printf("\n\nVoce deseja jogar de novo? (S/N): \n\n");
+    c = toupper(getchar());
+  }while(c != 'S' && c != 'N');
   system("clear");
+  return (c=='S') ? 1 : 0;
+}
+int main(void) 
+{
+  //system("clear");
   unsigned short int op;
   do{
     op = menu();
@@ -182,10 +236,11 @@ int main(void) {
     {
       case 1:
         escolherPalavra();
+        qtdChutes = 0;
         do{
           jogo();
         }while(!ganhou() && !perdeu()); //Continua enquanto não ganha ou não perde
-        printf("Deseja jogar de novo? (S/N");
+        op = fimJogo();
         break;
       case 2: 
         adicionarPalavras();
