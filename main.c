@@ -1,19 +1,29 @@
 //Jogo da Forca by Anderson e João Augusto.
-/*
-  O jogo precisa: armazenar palavras [check], remover palavras, sair[check], erros[check], ver as palavras[check].
-
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#define TAMANHO_MAX 20
 
 FILE *palavras; 
-char palavraescolhida[20];
-int qtdChutes = 0;
+char palavraescolhida[TAMANHO_MAX];
+unsigned short int qtdChutes = 0;
 char chutes[26];
 
+//Limpar tela 
+/*
+void limpar_tela() {
+
+  #ifdef _WIN32
+  system("cls");
+  #endif
+  #ifdef __linux__
+  system("clear");
+  #endif
+
+}
+*/ 
 void verificarArquivo()
 {
   if(palavras == NULL) { 
@@ -24,41 +34,55 @@ void verificarArquivo()
 
 void dicionario()
 {
-  char c;
+  int c;
+  char entrada;
   palavras = fopen("palavras.txt", "r");
   verificarArquivo();
   while((c=fgetc(palavras))!=EOF) {
     printf("%c", c);
   }
   printf("\n\nDigite uma letra para sair...\n");
-  scanf(" %c", &c);
+  scanf(" %c", &entrada);
   system("clear");
+}
+
+unsigned short int ehAlfabetica(char p[]) {
+  unsigned short int x = strlen(p);
+  for(int i = 0; i < x; i++) {
+      if(!(isalpha(p[i]))) {
+        return 1;
+      } 
+    }
+    return 0;
+}
+
+void recebePalavra(char p[]) {
+  do{
+      printf("Adicione uma palavra ao jogo (digite 0 para parar): \n");
+      scanf("  %s", p);
+      if(p[0]=='0') break;
+      if(ehAlfabetica(p)) {
+        printf("\n\nErro: algum caractere não faz parte do alfabeto, tente novamente!\n\n");
+      }
+    }while(ehAlfabetica(p));
 }
 
 void adicionarPalavras() 
 {
-  char p[32];
-  printf("Adicione uma palavra ao jogo (digite 0 para parar): \n");
-  scanf(" %s", p);
-  palavras = fopen("palavras.txt", "at");
-  verificarArquivo();
-  fprintf(palavras, "\n%s", p);
-  fclose(palavras);
-
-  //system("clear");
-	
-	//TODO: CHECAR SE CARACTERE É ALFABETICO
-	//CONVERTER PARA MINUSCULAS
+  char p[TAMANHO_MAX];
+  unsigned short int i;
   do{
-    printf("Adicione uma palavra ao jogo (digite 0 para parar): \n");
-    scanf("  %s", p);
-    if(p[0]=='0') break;
-    palavras = fopen("palavras.txt", "at");
-    fprintf(palavras, "\n%s", p);
-    fclose(palavras);
+    recebePalavra(p);
+    if(p[0]!='0') {
+      for(i = 0; i < strlen(p); i++) {
+      p[i] = tolower(p[i]);
+      }//Converter a string para minúscula 
+      palavras = fopen("palavras.txt", "at");
+      fprintf(palavras, "\n%s", p);
+      fclose(palavras);
+    }
     system("clear");
   }while(p[0]!='0');
-    system("clear");
 }
 
 void escolherPalavra()
@@ -70,8 +94,8 @@ void escolherPalavra()
   while((c = fgetc(palavras)) != EOF) {
     if(c == '\n') qtd++;
   }
-  rewind(palavras);
-  //srand(time(0)); //Colocar números aleatórios
+  rewind(palavras); //Volta pro começo pra contar linhas
+  srand(time(0)); //Colocar números aleatórios
   randomico = rand() % qtd; //entre 0 e qtd
   for(int i = 0; i < randomico; i++) 
   {
@@ -83,22 +107,25 @@ void escolherPalavra()
 unsigned short int menu() //Menu 
 {
   unsigned short int entrada;
+  system("clear");
   do{
     printf("\t\tJogo da Forca\n");
     printf("\t1-Começar jogo\n");
     printf("\t2-Adicionar palavras\n");
-    printf("\t3- Dicionario\n");
+    printf("\t3-Dicionario\n");
     printf("\t4-Sair\n\n");
     printf("Digite aqui: ");
     scanf(" %hu", &entrada);
-    if(entrada < 1 || entrada > 4) printf("Erro: número inválido, tente de novo.");
-    system("clear"); //Limpar system("cls");
-  
+    if(entrada < 1 || entrada > 4) {
+      printf("Erro: número inválido, tente de novo.");
+      system("clear");
+    }
   }while(entrada < 1 || entrada > 4);
+  system("clear");
   return entrada;
 }
 
-int letraexiste(char l) 
+unsigned short int letraexiste(char l) 
 {
   for(int i = 0; i < strlen(palavraescolhida); i++) {
     if(l == palavraescolhida[i]) return 1;
@@ -106,9 +133,9 @@ int letraexiste(char l)
   return 0;
 }
 
-int qtdErros()
+unsigned short int qtdErros()
 {
-  int erros = 0;
+  unsigned short int erros = 0;
   for(int i = 0; i < qtdChutes; i++) {
     if(!letraexiste(chutes[i])) erros++;
   }
@@ -129,9 +156,9 @@ void chute()
   qtdChutes++;
 }
 
-int chutado(char l)
+unsigned short int chutado(char l)
 {
-  int flag = 0;
+  unsigned short int flag = 0;
   for(int i = 0; i < qtdChutes; i++) {
     if(chutes[i] == l) {
       flag = 1;
@@ -141,15 +168,16 @@ int chutado(char l)
   return flag; 
 }
 
-int ganhou()
+unsigned short int ganhou()
 {
-  for(int i = 0; i < strlen(palavraescolhida); i++) {
+  unsigned short int x = strlen(palavraescolhida); // Para não chamar a função toda hora
+  for(int i = 0; i < x; i++) {
     if(!chutado(palavraescolhida[i])) return 0;
   }
   return 1;
 }
 
-int perdeu()
+unsigned short int perdeu()
 {
   return (qtdErros() >= 5);
 }
@@ -165,8 +193,8 @@ void forca(int erros)
 	printf(" |              \n");
 	printf("_|___           \n");
 	printf("\n\n");
-	
-  for(int i = 0; i < strlen(palavraescolhida); i++) {
+	unsigned short int x = strlen(palavraescolhida);
+  for(int i = 0; i < x; i++) {
 	  if(chutado(palavraescolhida[i])) printf("%c ", palavraescolhida[i]);
 	  else printf("_ ");
 	}
@@ -174,7 +202,7 @@ void forca(int erros)
 
 void jogo()
 {
-  int erros = qtdErros();
+  unsigned short int erros = qtdErros();
   forca(erros);
   chute();
   system("clear");
@@ -198,8 +226,7 @@ unsigned short int fimJogo()
 		printf("         _.' '._        \n");
 		printf("        '-------'       \n\n");
 	} else {
-		printf("\nCARALHO MERMÃO, TU É MT BURRO!\n");
-    printf("FOI ENFORCADO CARA, JÁ ERA!\t\t\n");
+    printf("\nQue pena, você perdeu!\n");
 		printf("A palavra era **%s**\n\n", palavraescolhida);
 
 		printf("    _______________         \n");
@@ -221,15 +248,18 @@ unsigned short int fimJogo()
   }
   do{
     printf("\n\nVoce deseja jogar de novo? (S/N): \n\n");
-    c = toupper(getchar());
+    scanf(" %c", &c);
+    c = toupper(c);
   }while(c != 'S' && c != 'N');
   system("clear");
   return (c=='S') ? 1 : 0;
 }
+
 int main(void) 
 {
-  //system("clear");
-  unsigned short int op;
+  system("clear");
+  //TODO: RESOLVER A GAMBIARRA DO VETOR
+  unsigned short int op, flag = 1; 
   do{
     op = menu();
     switch(op) 
@@ -240,7 +270,7 @@ int main(void)
         do{
           jogo();
         }while(!ganhou() && !perdeu()); //Continua enquanto não ganha ou não perde
-        op = fimJogo();
+        flag = fimJogo();
         break;
       case 2: 
         adicionarPalavras();
@@ -249,9 +279,10 @@ int main(void)
         dicionario();
         break;
       case 4:
-        printf("\tObrigado por jogar o jogo!\nBy: Anderson Lopes e João Augusto\n\n");
         break;
     }
+    if(!flag) break;
   }while(op!=4);
+  printf("\tObrigado por jogar o nosso jogo!\nBy: Anderson Lopes e João Augusto\n\n");
   return 0;
 }
