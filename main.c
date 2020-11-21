@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#include "forca.h"
 #define TAMANHO_MAX 20
 
 FILE *palavras; 
@@ -148,10 +149,10 @@ void chute()
   char chute[2];
   printf("\nDigite a letra: ");
 	do {
-  	scanf(" %s", &chute);
+  	scanf(" %s", chute);
 	} while(! isalpha(chute[0]));
   chute[0] = tolower(chute[0]);//coloca toda as letras digitadas em minúsculo
-  fflush(stdin); 
+  scanf("%*c"); //limpa buffer de entrada
   chutes[qtdChutes] = chute[0];
   qtdChutes++;
 }
