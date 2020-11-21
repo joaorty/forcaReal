@@ -1,7 +1,10 @@
-FILE *palavras;
-char palavraescolhida[TAMANHO_MAX];
-unsigned short int qtdChutes;
-char chutes[26];
+#ifndef FORCA_H //impedir múltiplas definições da mesma função
+#define FORCA_H
+#include <stdio.h> //Incluído para usar FILE
+extern FILE *palavras;
+extern char palavraescolhida[20];
+extern unsigned short int qtdChutes;
+extern char chutes[26];
 void verificarArquivo();
 void dicionario();
 unsigned short int ehAlfabetica(char p[]);
@@ -18,3 +21,5 @@ unsigned short int perdeu();
 void forca(int erros);
 void jogo();
 unsigned short int fimJogo();
+
+#endif
